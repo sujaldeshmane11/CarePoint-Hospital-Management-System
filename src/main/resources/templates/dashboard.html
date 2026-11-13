@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CarePoint HMS</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: #f3f7fc;
+        }
+
+        .dashboard-hero {
+            background: linear-gradient(120deg, #102a43, #087e8b);
+            color: white;
+            padding: 38px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(16, 42, 67, 0.13);
+        }
+
+        .dashboard-hero .eyebrow {
+            color: #a5f3fc;
+        }
+
+        .dashboard-hero h1 {
+            color: white;
+            font-size: 32px;
+            margin: 12px 0;
+        }
+
+        .dashboard-hero p {
+            color: #e0f2fe;
+            line-height: 1.6;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 7px 13px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #e5edf5;
+            box-shadow: 0 5px 20px rgba(16,42,67,0.06);
+            transition: 0.25s;
+        }
+
+        .stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(16,42,67,0.12);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 13px;
+            font-size: 23px;
+            background: #e0f2fe;
+        }
+
+        .stat:nth-child(2) .stat-icon { background: #dcfce7; }
+        .stat:nth-child(3) .stat-icon { background: #fef3c7; }
+        .stat:nth-child(4) .stat-icon { background: #dcfce7; }
+        .stat:nth-child(5) .stat-icon { background: #fee2e2; }
+        .stat:nth-child(6) .stat-icon { background: #e0f2fe; }
+
+        .stat span {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 36px;
+            color: #102a43;
+            margin-top: 16px;
+        }
+
+        .stat p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
+        .section-card {
+            background: white;
+            padding: 27px;
+            border-radius: 16px;
+            margin-top: 28px;
+            border: 1px solid #e5edf5;
+            box-shadow: 0 5px 20px rgba(16,42,67,0.05);
+        }
+
+        .section-heading {
+            margin-bottom: 20px;
+        }
+
+        .section-heading h2 {
+            color: #102a43;
+            margin: 0 0 8px;
+            font-size: 21px;
+        }
+
+        .section-heading p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Appointment Chart */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 320px;
+            margin: auto;
+        }
+
+        /* Upcoming Appointments */
+        .upcoming-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .upcoming-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        .upcoming-table th,
+        .upcoming-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5edf5;
+            font-size: 13px;
+        }
+
+        .upcoming-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .upcoming-table td {
+            color: #334155;
+        }
+
+        .upcoming-status {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .no-upcoming {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .action-card {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 17px;
+            border: 1px solid #e5edf5;
+            border-radius: 12px;
+            color: #102a43;
+            text-decoration: none;
+            transition: 0.2s;
+            background: #fbfdff;
+        }
+
+        .action-card:hover {
+            border-color: #087e8b;
+            background: #f0fdfa;
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            min-width: 43px;
+            height: 43px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #e0f2fe;
+            border-radius: 11px;
+            font-size: 21px;
+        }
+
+        .action-card strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .action-card small {
+            display: block;
+            color: #94a3b8;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .record-card .action-icon {
+            background: #e0f2f1;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            padding: 30px 0 10px;
+        }
+
+        @media(max-width: 750px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-hero {
+                padding: 25px;
+            }
+
+            .dashboard-hero h1 {
+                font-size: 26px;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="container">
+
+    <!-- Dashboard Hero -->
+    <section class="dashboard-hero">
+
+        <span class="hero-tag">ADMIN DASHBOARD</span>
+
+        <p class="eyebrow">CAREPOINT HOSPITAL MANAGEMENT</p>
+
+        <h1>Welcome to CarePoint HMS</h1>
+
+        <p>
+            Manage your hospital activities, patients,
+            doctors and appointments from one place.
+        </p>
+
+    </section>
+
+    <!-- Six Dashboard Statistics -->
+    <section class="stats">
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Total Patients</span>
+                <div class="stat-icon">👨‍⚕️</div>
+            </div>
+            <strong th:text="${patientCount}">0</strong>
+            <p>Registered Patients</p>
+        </div>
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Total Doctors</span>
+                <div class="stat-icon">🩺</div>
+            </div>
+            <strong th:text="${doctorCount}">0</strong>
+            <p>Available Doctors</p>
+        </div>
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Total Appointments</span>
+                <div class="stat-icon">📅</div>
+            </div>
+            <strong th:text="${appointmentCount}">0</strong>
+            <p>All Appointments</p>
+        </div>
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Booked Appointments</span>
+                <div class="stat-icon">🕒</div>
+            </div>
+            <strong th:text="${bookedCount}">0</strong>
+            <p>Pending Appointments</p>
+        </div>
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Completed Appointments</span>
+                <div class="stat-icon">✅</div>
+            </div>
+            <strong th:text="${completedCount}">0</strong>
+            <p>Successfully Completed</p>
+        </div>
+
+        <div class="stat">
+            <div class="stat-top">
+                <span>Cancelled Appointments</span>
+                <div class="stat-icon">❌</div>
+            </div>
+            <strong th:text="${cancelledCount}">0</strong>
+            <p>Cancelled Appointments</p>
+        </div>
+
+    </section>
+
+    <!-- Appointment Chart -->
+    <section class="section-card">
+
+        <div class="section-heading">
+            <h2>Appointment Overview</h2>
+            <p>Visual overview of all appointment statuses.</p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="appointmentChart"></canvas>
+        </div>
+
+    </section>
+
+    <!-- Upcoming Appointments -->
+    <section class="section-card">
+
+        <div class="section-heading">
+            <h2>Upcoming Appointments</h2>
+            <p>View all upcoming booked appointments.</p>
+        </div>
+
+        <div class="upcoming-table-wrapper">
+
+            <table class="upcoming-table">
+
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="a : ${upcomingAppointments}">
+
+                        <td th:text="${a.patient.name}">
+                            Patient
+                        </td>
+
+                        <td th:text="${a.doctor.name}">
+                            Doctor
+                        </td>
+
+                        <td th:text="${a.appointmentDate != null ? #temporals.format(a.appointmentDate, 'dd-MM-yyyy') : '-'}">
+                            Date
+                        </td>
+
+                        <td th:text="${a.appointmentTime != null ? #temporals.format(a.appointmentTime, 'hh:mm a') : '-'}">
+                            Time
+                        </td>
+
+                        <td th:text="${a.reason}">
+                            Reason
+                        </td>
+
+                        <td>
+                            <span class="upcoming-status"
+                                  th:text="${a.status}">
+                                BOOKED
+                            </span>
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(upcomingAppointments)}">
+                        <td colspan="6" class="no-upcoming">
+                            No Upcoming Appointments Found.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="section-card">
+
+        <div class="section-heading">
+            <h2>Quick Actions</h2>
+            <p>Quickly perform your daily hospital activities.</p>
+        </div>
+
+        <div class="quick-actions">
+
+            <a class="action-card" th:href="@{/patients/new}">
+                <div class="action-icon">➕</div>
+                <div>
+                    <strong>Add Patient</strong>
+                    <small>Register a new patient</small>
+                </div>
+            </a>
+
+            <a class="action-card" th:href="@{/doctors/new}">
+                <div class="action-icon">🩺</div>
+                <div>
+                    <strong>Add Doctor</strong>
+                    <small>Register a new doctor</small>
+                </div>
+            </a>
+
+            <a class="action-card" th:href="@{/appointments/new}">
+                <div class="action-icon">📅</div>
+                <div>
+                    <strong>Book Appointment</strong>
+                    <small>Schedule an appointment</small>
+                </div>
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Manage Records -->
+    <section class="section-card">
+
+        <div class="section-heading">
+            <h2>Manage Records</h2>
+            <p>View and manage all hospital records.</p>
+        </div>
+
+        <div class="quick-actions">
+
+            <a class="action-card record-card" th:href="@{/patients}">
+                <div class="action-icon">👥</div>
+                <div>
+                    <strong>View Patients</strong>
+                    <small>Manage patient records</small>
+                </div>
+            </a>
+
+            <a class="action-card record-card" th:href="@{/doctors}">
+                <div class="action-icon">👨‍⚕️</div>
+                <div>
+                    <strong>View Doctors</strong>
+                    <small>Manage doctor records</small>
+                </div>
+            </a>
+
+            <a class="action-card record-card" th:href="@{/appointments}">
+                <div class="action-icon">📋</div>
+                <div>
+                    <strong>View Appointments</strong>
+                    <small>Manage appointments</small>
+                </div>
+            </a>
+
+        </div>
+
+    </section>
+
+    <footer class="dashboard-footer">
+        © 2026 CarePoint HMS | Hospital Management System
+    </footer>
+
+</main>
+
+<!-- Chart Script -->
+<script th:inline="javascript">
+
+    const bookedCount = /*[[${bookedCount}]]*/ 0;
+    const completedCount = /*[[${completedCount}]]*/ 0;
+    const cancelledCount = /*[[${cancelledCount}]]*/ 0;
+
+    const chartElement = document.getElementById('appointmentChart');
+
+    new Chart(chartElement, {
+
+        type: 'doughnut',
+
+        data: {
+            labels: ['Booked', 'Completed', 'Cancelled'],
+
+            datasets: [{
+                data: [
+                    bookedCount,
+                    completedCount,
+                    cancelledCount
+                ],
+
+                backgroundColor: [
+                    '#3b82f6',
+                    '#22c55e',
+                    '#ef4444'
+                ],
+
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 10
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: {
+                            size: 13
+                        }
+                    }
+                },
+
+                tooltip: {
+                    enabled: true
+                }
+            },
+
+            cutout: '65%'
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

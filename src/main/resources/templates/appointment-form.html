@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Form - CarePoint HMS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="container narrow">
+
+    <div class="pagehead">
+        <div>
+            <p class="eyebrow">CAREPOINT HMS</p>
+            <h1 th:text="${appointment.id == null ? 'Book Appointment' : 'Edit Appointment'}">
+                Book Appointment
+            </h1>
+            <p class="muted">Schedule a patient visit with a doctor.</p>
+        </div>
+
+        <a class="btn btn-secondary" th:href="@{/appointments}">
+            Back
+        </a>
+    </div>
+
+    <section class="card">
+
+        <div th:if="${errorMessage != null}"
+             style="background:#fee2e2;color:#b91c1c;padding:13px;border-radius:8px;margin-bottom:18px;"
+             th:text="${errorMessage}">
+        </div>
+
+        <form class="form"
+              th:action="@{/appointments/save}"
+              th:object="${appointment}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <label>
+                Select Patient
+                <select th:field="*{patient}" required>
+                    <option value="">-- Select Patient --</option>
+
+                    <option th:each="p : ${patients}"
+                            th:value="${p.id}"
+                            th:text="${p.name}">
+                    </option>
+                </select>
+            </label>
+
+            <small th:errors="*{patient}"></small>
+
+            <label>
+                Select Doctor
+                <select th:field="*{doctor}" required>
+                    <option value="">-- Select Doctor --</option>
+
+                    <option th:each="d : ${doctors}"
+                            th:value="${d.id}"
+                            th:text="${d.name + ' - ' + d.specialization}">
+                    </option>
+                </select>
+            </label>
+
+            <small th:errors="*{doctor}"></small>
+
+            <label>
+                Appointment Date
+                <input type="date"
+                       th:field="*{appointmentDate}"
+                       required>
+            </label>
+
+            <small th:errors="*{appointmentDate}"></small>
+
+            <label>
+                Appointment Time
+                <input type="time"
+                       th:field="*{appointmentTime}"
+                       required>
+            </label>
+
+            <small th:errors="*{appointmentTime}"></small>
+
+            <label>
+                Reason for Visit
+                <textarea th:field="*{reason}"
+                          rows="4"
+                          placeholder="Describe the reason for appointment..."></textarea>
+            </label>
+
+            <div class="form-actions">
+                <button class="btn" type="submit"
+                        th:text="${appointment.id == null ? 'Book Appointment' : 'Update Appointment'}">
+                    Book Appointment
+                </button>
+
+                <a class="cancel" th:href="@{/appointments}">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+</body>
+</html>

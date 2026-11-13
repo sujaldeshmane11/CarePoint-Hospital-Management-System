@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Form - CarePoint HMS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="container narrow">
+
+    <div class="pagehead">
+        <div>
+            <p class="eyebrow">CAREPOINT HMS</p>
+            <h1 th:text="${doctor.id == null ? 'Add New Doctor' : 'Edit Doctor'}">
+                Add New Doctor
+            </h1>
+            <p class="muted">Enter doctor details below.</p>
+        </div>
+        <a class="btn btn-secondary" th:href="@{/doctors}">
+            Back to Doctors
+        </a>
+    </div>
+
+    <section class="card">
+        <form class="form"
+              th:action="@{/doctors/save}"
+              th:object="${doctor}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <label>
+                Doctor Name
+                <input type="text"
+                       th:field="*{name}"
+                       placeholder="Enter doctor full name"
+                       required>
+            </label>
+            <small th:errors="*{name}"></small>
+
+            <label>
+                Specialization
+                <input type="text"
+                       th:field="*{specialization}"
+                       placeholder="e.g. Cardiologist"
+                       required>
+            </label>
+            <small th:errors="*{specialization}"></small>
+
+            <label>
+                Phone Number
+                <input type="text"
+                       th:field="*{phone}"
+                       maxlength="10"
+                       placeholder="Enter 10-digit phone number"
+                       required>
+            </label>
+            <small th:errors="*{phone}"></small>
+
+            <hr>
+
+            <h3>Doctor Availability</h3>
+
+            <label>
+                Availability Status
+                <select th:field="*{available}">
+                    <option value="true">Available</option>
+                    <option value="false">Not Available</option>
+                </select>
+            </label>
+
+            <label>
+                Start Time
+                <input type="time" th:field="*{startTime}" required>
+            </label>
+
+            <label>
+                End Time
+                <input type="time" th:field="*{endTime}" required>
+            </label>
+
+            <label>
+                Working Days
+                <input type="text"
+                       th:field="*{workingDays}"
+                       placeholder="Monday, Tuesday, Wednesday"
+                       required>
+            </label>
+
+            <small class="muted">
+                Example: Monday, Tuesday, Wednesday, Thursday, Friday
+            </small>
+
+            <div class="form-actions">
+                <button class="btn" type="submit"
+                        th:text="${doctor.id == null ? 'Save Doctor' : 'Update Doctor'}">
+                    Save Doctor
+                </button>
+
+                <a class="cancel" th:href="@{/doctors}">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

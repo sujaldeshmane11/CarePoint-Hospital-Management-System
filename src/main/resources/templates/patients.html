@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients - CarePoint HMS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .patient-header {
+            background: linear-gradient(120deg, #102a43, #087e8b);
+            padding: 30px;
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .patient-header h1 {
+            color: white;
+            margin: 0 0 8px;
+        }
+
+        .patient-header p {
+            color: #dbeafe;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .add-patient {
+            background: white;
+            color: #087e8b;
+            padding: 12px 18px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .add-patient:hover {
+            background: #e0f2f1;
+        }
+
+        .patient-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+
+        .patient-summary h2 {
+            color: #102a43;
+            font-size: 19px;
+            margin: 0;
+        }
+
+        .patient-count {
+            background: #e0f2f1;
+            color: #087e8b;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Search Box */
+        .search-box {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #087e8b;
+            box-shadow: 0 0 0 3px rgba(8,126,139,0.1);
+        }
+
+        .search-btn {
+            background: #087e8b;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background: #102a43;
+        }
+
+        .clear-btn {
+            background: #e2e8f0;
+            color: #334155;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        .patient-table th {
+            background: #102a43;
+            color: white;
+            padding: 16px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .patient-table td {
+            padding: 15px 16px;
+            border-bottom: 1px solid #edf1f5;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .patient-table tbody tr:hover {
+            background: #f0fdfa;
+        }
+
+        .patient-id {
+            color: #087e8b;
+            font-weight: bold;
+        }
+
+        .patient-name {
+            color: #102a43;
+            font-weight: bold;
+        }
+
+        .gender {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-btn {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 7px 12px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 45px !important;
+            color: #64748b;
+        }
+
+        @media(max-width: 600px) {
+            .patient-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 23px;
+            }
+
+            .patient-header h1 {
+                font-size: 27px;
+            }
+
+            .patient-summary {
+                align-items: flex-start;
+            }
+
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="container">
+
+    <section class="patient-header">
+        <div>
+            <h1>Patient Management</h1>
+            <p>View, search and manage all patient records.</p>
+        </div>
+
+        <a class="add-patient" th:href="@{/patients/new}">
+            + Add Patient
+        </a>
+    </section>
+
+    <!-- Search Form -->
+    <form class="search-box" th:action="@{/patients}" method="get">
+
+        <input type="text"
+               name="keyword"
+               class="search-input"
+               placeholder="Search patient by name..."
+               th:value="${keyword}">
+
+        <button type="submit" class="search-btn">
+            Search
+        </button>
+
+        <a class="clear-btn" th:href="@{/patients}">
+            Clear
+        </a>
+
+    </form>
+
+    <section>
+
+        <div class="patient-summary">
+            <h2>All Patients</h2>
+
+            <span class="patient-count">
+                Total: <span th:text="${#lists.size(patients)}">0</span>
+            </span>
+        </div>
+
+        <div class="tablewrap">
+
+            <table class="patient-table">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient Name</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="p : ${patients}">
+
+                        <td class="patient-id" th:text="${p.id}"></td>
+                        <td class="patient-name" th:text="${p.name}"></td>
+                        <td th:text="${p.phone}"></td>
+
+                        <td>
+                            <span class="gender" th:text="${p.gender}"></span>
+                        </td>
+
+                        <td th:text="${p.dateOfBirth}"></td>
+                        <td th:text="${p.address}"></td>
+
+                        <td>
+                            <div class="action-buttons">
+
+                                <a class="edit-btn"
+                                   th:href="@{/patients/edit/{id}(id=${p.id})}">
+                                    Edit
+                                </a>
+
+                                <form th:action="@{/patients/delete/{id}(id=${p.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Delete this patient?');">
+
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}">
+
+                                    <button type="submit" class="delete-btn">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(patients)}">
+                        <td colspan="7" class="empty">
+                            No patients found.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>
