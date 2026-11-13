@@ -61,23 +61,23 @@ CarePoint is a web application designed to simplify hospital management activiti
 
 ## Screenshots
 
-### Login Page
+### 1. Login Page
 ![Login Page](screenshots/login.png)
 
-### Logout Page
-![Logout Page](screenshots/logout.png)
-
-### Admin Dashboard
+### 2. Admin Dashboard
 ![Admin Dashboard](screenshots/dashboard.png)
 
-### Patients Page
+### 3. Patients Page
 ![Patients Page](screenshots/patients.png)
 
-### Doctors Page
+### 4. Doctors Page
 ![Doctors Page](screenshots/doctors.png)
 
-### Appointments Page
+### 5. Appointments Page
 ![Appointments Page](screenshots/appointments.png)
+
+### 6. Logout Page
+![Logout Page](screenshots/logout.png)
 
 ## Requirements
 
