@@ -1,3 +1,4 @@
+
 # CarePoint - Hospital Management System
 
 A full-stack web-based Hospital Management System developed using Java, Spring Boot, Thymeleaf and MySQL.
@@ -58,6 +59,23 @@ CarePoint is a web application designed to simplify hospital management activiti
 - Protected application pages
 - Logout functionality
 
+## Screenshots
+
+### Login Page
+![Login Page](screenshots/Annotation%202026-11-13%20145850.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/Annotation%202026-11-13%20145532.png)
+
+### Patients Page
+![Patients Page](screenshots/Annotation%202026-11-13%20145645.png)
+
+### Doctors Page
+![Doctors Page](screenshots/Annotation%202026-11-13%20145714.png)
+
+### Appointments Page
+![Appointments Page](screenshots/Annotation%202026-11-13%20145745.png)
+
 ## Requirements
 
 - Java 17 or newer
@@ -71,15 +89,16 @@ CarePoint is a web application designed to simplify hospital management activiti
 2. Open the project folder in VS Code.
 3. Start MySQL Server.
 4. Open `src/main/resources/application.properties`.
-5. Configure your MySQL database name, username and password.
-6. Open the terminal in the project folder.
-7. Run the application:
+5. Configure your MySQL database name and username.
+6. Set the `DB_PASSWORD` environment variable to your MySQL password.
+7. Open the terminal in the project folder.
+8. Run the application:
 
 ```bash
 mvn spring-boot:run
 ```
 
-8. Open your browser:
+9. Open your browser:
 
 ```text
 http://localhost:8080
